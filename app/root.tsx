@@ -14,7 +14,9 @@ import {
 import favicon from '~/assets/favicon.svg';
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
+import chatStyles from '~/styles/chat.css?url';
 import {PageLayout} from '~/components/PageLayout';
+import {ChatWidget} from '~/components/ChatWidget';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
 
 export type RootLoader = typeof loader;
@@ -41,6 +43,7 @@ export function links() {
   return [
     {rel: 'stylesheet', href: resetStyles},
     {rel: 'stylesheet', href: appStyles},
+    {rel: 'stylesheet', href: chatStyles},
     {
       rel: 'preconnect',
       href: 'https://cdn.shopify.com',
@@ -151,6 +154,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         ) : (
           children
         )}
+        <ChatWidget />
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
       </body>
