@@ -9,7 +9,7 @@ type Message = {
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { id: 'welcome', text: 'Hi! How can I help you today?', sender: 'bot' }
+    { id: 'welcome', text: 'Master. Ai initialized. Systems online. Awaiting directive.', sender: 'bot' }
   ]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +21,7 @@ export function ChatWidget() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isOpen]);
+  }, [messages, isOpen, isLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,6 +38,9 @@ export function ChatWidget() {
     setIsLoading(true);
 
     try {
+      // Simulate network delay for "thinking" effect
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -54,7 +57,7 @@ export function ChatWidget() {
       
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: data.reply || "I'm sorry, I couldn't understand that.",
+        text: data.reply || "Directive unclear.",
         sender: 'bot'
       };
       
@@ -63,7 +66,7 @@ export function ChatWidget() {
       console.error('Error sending message:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "Sorry, something went wrong. Please try again later.",
+        text: "System critical error. Connection terminated.",
         sender: 'bot'
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -77,8 +80,19 @@ export function ChatWidget() {
       {isOpen && (
         <div className="chat-window">
           <div className="chat-header">
-            <h3>Customer Support</h3>
-            <button className="close-btn" onClick={() => setIsOpen(false)}>×</button>
+            <div className="chat-header-info">
+              <h3>MASTER. AI</h3>
+              <div className="chat-status">
+                <div className="status-dot"></div>
+                SYSTEM ONLINE
+              </div>
+            </div>
+            <button className="close-btn" onClick={() => setIsOpen(false)}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
           </div>
           <div className="chat-messages">
             {messages.map((msg) => (
@@ -88,7 +102,7 @@ export function ChatWidget() {
             ))}
             {isLoading && (
               <div className="message bot">
-                Typing...
+                Processing...
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -97,23 +111,30 @@ export function ChatWidget() {
             <input
               type="text"
               className="chat-input"
-              placeholder="Type a message..."
+              placeholder="Enter command..."
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               disabled={isLoading}
             />
             <button type="submit" className="send-btn" disabled={isLoading || !inputText.trim()}>
-              Send
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
             </button>
           </form>
         </div>
       )}
       <button className="chat-toggle-btn" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle Chat">
         {isOpen ? (
-          <span style={{ fontSize: '24px' }}>×</span>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
         ) : (
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+             <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"></path>
+             <circle cx="12" cy="12" r="3"></circle>
           </svg>
         )}
       </button>
